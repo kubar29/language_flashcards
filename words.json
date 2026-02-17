@@ -1,0 +1,72 @@
+[
+  {
+    "word": "apple",
+    "translation": "jabłko",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "house",
+    "translation": "dom",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "water",
+    "translation": "woda",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "book",
+    "translation": "książka",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "car",
+    "translation": "samochód",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "sun",
+    "translation": "słońce",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "food",
+    "translation": "jedzenie",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "friend",
+    "translation": "przyjaciel",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "school",
+    "translation": "szkoła",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  },
+  {
+    "word": "work",
+    "translation": "praca",
+    "weight": 0,
+    "used": 0,
+    "lastSeen": 0
+  }
+]
