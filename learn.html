@@ -4,24 +4,37 @@
   <meta charset="UTF-8">
   <title>Nauka</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#4CAF50">
+
 </head>
 
 <body>
 
-<h2 id="word">Ładowanie...</h2>
+<div id="connectionStatus"></div>
 
-<input id="answer" placeholder="Wpisz tłumaczenie">
+<div class="container">
+  <div class="card">
 
-<br><br>
+    <h2 id="word"></h2>
 
-<button onclick="checkAnswer()">Znam</button>
-<button onclick="dontKnow()">Nie znam</button>
+    <input
+      type="text"
+      id="answer"
+      placeholder="Podaj tłumaczenie"
+      style="display:none"
+    />
 
-<p id="feedback"></p>
+    <div id="feedback"></div>
 
-<a href="stats.html">Statystyki</a>
+    <button id="knowBtn" onclick="handleKnow()">Znam</button>
+    <button class="secondary" onclick="dontKnow()">Nie znam</button>
+    <button class="secondary" onclick="window.location='stats.html'">Statystyki</button>
+  </div>
+</div>
 
 <script src="app.js"></script>
-
 </body>
+
 </html>

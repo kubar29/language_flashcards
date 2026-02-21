@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Statystyki</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#4CAF50">
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+    <h1>Statystyki</h1>
+
+    <!-- Podsumowanie -->
+    <p id="stats-summary"></p>
+
+    <!-- Tabela ze słowami -->
+    <div class="table-wrapper">
+      <table id="stats-table">
+        <thead>
+          <tr>
+            <th>Słowo</th>
+            <th>Tłumaczenie</th>
+            <th>Poziom</th>
+            <th>Użycia</th>
+            <th>Ostatnio użyto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- tutaj będą wstawiane wiersze -->
+        </tbody>
+      </table>
+    </div>
+
+    <button onclick="window.location.href='index.html'">Powrót do menu</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", showStats);
+</script>
+</body>
+</html>

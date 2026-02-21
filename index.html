@@ -4,15 +4,31 @@
   <meta charset="UTF-8">
   <title>language Flashcards</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#4CAF50">
 </head>
 
 <body>
 
-<h1>Nauka słówek</h1>
-
-<button onclick="startLearning()">Rozpocznij naukę</button>
+<div class="container">
+  <div class="card">
+    <h1>Flashcards</h1>
+    <button onclick="startLearning()">Rozpocznij naukę</button>
+    <button class="secondary" onclick="window.location='stats.html'">Statystyki</button>
+  </div>
+</div>
 
 <script src="app.js"></script>
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js")
+        .then(reg => console.log("SW register success", reg.scope))
+        .catch(err => console.log("SW register failed", err))
+    });
+  }
+</script>
 
 </body>
 </html>

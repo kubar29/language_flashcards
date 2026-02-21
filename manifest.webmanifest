@@ -1,0 +1,23 @@
+{
+  "name": "Flashcards PWA - Nauka Słówek",
+  "short_name": "Flashcards",
+  "description": "Prosta aplikacja PWA do nauki słówek z wykorzystaniem fiszek.",
+  "start_url": "/index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

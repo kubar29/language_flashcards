@@ -4,6 +4,8 @@ function startLearning() {
 
 let words = [];
 let currentWord = null;
+let isAnswering = false;
+
 
 const COOLDOWN_MS = 30000; // 30s przerwy zanim słowo może wrócić
 
@@ -41,7 +43,60 @@ async function init() {
 }
 
 ////////////////////////////////////////////////////////////
-// ⭐ INTELIGENTNY WYBÓR SŁOWA
+// POWIADOMIENIA — raz dziennie
+////////////////////////////////////////////////////////////
+
+async function requestNotificationPermission() {
+  if (!("Notification" in window)) return;
+
+  let permission = Notification.permission;
+
+  if (permission === "default") {
+    permission = await Notification.requestPermission();
+  }
+
+  if (permission === "granted") {
+    sendDailyReminder();
+  }
+}
+
+function sendDailyReminder() {
+  if (Notification.permission !== "granted") return;
+
+  const lastNotified = localStorage.getItem("lastNotification") || 0;
+
+  // jeśli ostatnie powiadomienie było >24h temu
+  if (Date.now() - lastNotified > 24 * 60 * 60 * 1000) {
+    const notification = new Notification("Flashcards", {
+      body: "Czas się dziś pouczyć 📚",
+      icon: "./icons/icon-192.png",
+      vibrate: [200, 100, 200],
+      tag: "daily-reminder"
+    });
+
+    notification.onclick = () => {
+      window.focus();
+      window.location.href = "learn.html";
+    };
+
+    localStorage.setItem("lastNotification", Date.now());
+  }
+}
+
+// wywołanie po załadowaniu DOM
+document.addEventListener("DOMContentLoaded", requestNotificationPermission);
+
+////////////////////////////////////////////////////////////
+// FUNKCJA VIBRACJI
+////////////////////////////////////////////////////////////
+function vibrate(pattern) {
+  if ("vibrate" in navigator) {
+    navigator.vibrate(pattern);
+  }
+}
+
+////////////////////////////////////////////////////////////
+// INTELIGENTNY WYBÓR SŁOWA
 ////////////////////////////////////////////////////////////
 
 function calculatePriority(word) {
@@ -83,14 +138,43 @@ function pickWord(words) {
 ////////////////////////////////////////////////////////////
 // UI
 ////////////////////////////////////////////////////////////
-
 function showNextWord() {
   currentWord = pickWord(words);
 
   document.getElementById("word").textContent = currentWord.word;
   document.getElementById("answer").value = "";
   document.getElementById("feedback").textContent = "";
+
+  // reset UI
+  const input = document.getElementById("answer");
+  const btn = document.getElementById("knowBtn");
+
+  if (input) input.style.display = "none";
+  if (btn) btn.textContent = "Znam";
+
+  isAnswering = false;
 }
+
+
+function handleKnow() {
+  const input = document.getElementById("answer");
+  const btn = document.getElementById("knowBtn");
+
+  // jeśli jeszcze nie odpowiadamy → pokaż input
+  if (!isAnswering) {
+    input.style.display = "block";
+    input.focus();
+
+    btn.textContent = "Sprawdź";
+    isAnswering = true;
+
+    return;
+  }
+
+  // jeśli już odpowiadamy → sprawdź odpowiedź
+  checkAnswer();
+}
+
 
 function checkAnswer() {
   const answer = document
@@ -101,12 +185,12 @@ function checkAnswer() {
 
   if (answer === currentWord.translation.toLowerCase()) {
     document.getElementById("feedback").textContent = "Poprawnie!";
-
+    vibrate(100);
     currentWord.weight = Math.min(currentWord.weight + 1, 10);
   } else {
     document.getElementById("feedback").textContent =
       "Źle. Poprawna odpowiedź: " + currentWord.translation;
-
+    vibrate([200, 100, 200]);
     currentWord.weight = 0;
   }
 
@@ -117,7 +201,7 @@ function checkAnswer() {
 function dontKnow() {
   document.getElementById("feedback").textContent =
     "Poprawna odpowiedź: " + currentWord.translation;
-
+  vibrate([200, 100, 200]);
   currentWord.weight = 0;
 
   updateUsage(currentWord);
@@ -141,11 +225,39 @@ function saveAndContinue() {
 ////////////////////////////////////////////////////////////
 // statystyki
 ////////////////////////////////////////////////////////////
+function formatDate(timestamp) {
+  if (!timestamp || timestamp === 0) return "nigdy";
+
+  const date = new Date(timestamp);
+  return date.toLocaleString();
+}
 
 function showStats() {
   const learned = words.filter(w => w.weight >= 5).length;
   const total = words.length;
 
-  document.getElementById("stats").textContent =
+  document.getElementById("stats-summary").textContent =
     `Opanowane słowa: ${learned} / ${total}`;
+
+  const tableBody = document.querySelector("#stats-table tbody");
+  tableBody.innerHTML = "";
+
+  // sortowanie po poziomie nauki malejąco (najlepiej opanowane na górze)
+  const sortedWords = [...words].sort((a, b) => b.weight - a.weight);
+
+  sortedWords.forEach(word => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${word.word}</td>
+      <td>${word.translation}</td>
+      <td>${word.weight}/10</td>
+      <td>${word.used || 0}</td>
+      <td>${formatDate(word.lastSeen)}</td>
+    `;
+
+    tableBody.appendChild(row);
+  });
 }
+
+
