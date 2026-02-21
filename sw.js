@@ -48,8 +48,7 @@ self.addEventListener('activate', event => {
                 console.error('Błąd podczas usuwania starych cache', error);
             })
     );
-    //przejęcie kontroli przes SW nad wszystkimi otawrtymi kartami 
-    
+
 })
 // strategia cachowania Stale-while-revalidate
 self.addEventListener('fetch', event =>{

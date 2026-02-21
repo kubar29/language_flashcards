@@ -7,18 +7,15 @@ let currentWord = null;
 let isAnswering = false;
 
 
-const COOLDOWN_MS = 30000; // 30s przerwy zanim słowo może wrócić
+const COOLDOWN_MS = 30000; 
 
-// inicjalizacja przy starcie strony
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  // jeśli nie ma danych — wczytaj z JSON
   if (!localStorage.getItem("words")) {
     const res = await fetch("words.json");
     const data = await res.json();
 
-    // upewnij się że każde słowo ma wymagane pola
     const initialized = data.map(w => ({
       ...w,
       weight: w.weight ?? 0,
@@ -31,20 +28,15 @@ async function init() {
 
   words = JSON.parse(localStorage.getItem("words"));
 
-  // jeśli jesteśmy na learn.html
   if (document.getElementById("word")) {
     showNextWord();
   }
 
-  // jeśli jesteśmy na stats.html
   if (document.getElementById("stats")) {
     showStats();
   }
 }
 
-////////////////////////////////////////////////////////////
-// POWIADOMIENIA — raz dziennie
-////////////////////////////////////////////////////////////
 
 async function requestNotificationPermission() {
   if (!("Notification" in window)) return;
@@ -65,7 +57,6 @@ function sendDailyReminder() {
 
   const lastNotified = localStorage.getItem("lastNotification") || 0;
 
-  // jeśli ostatnie powiadomienie było >24h temu
   if (Date.now() - lastNotified > 24 * 60 * 60 * 1000) {
     const notification = new Notification("Flashcards", {
       body: "Czas się dziś pouczyć 📚",
@@ -83,43 +74,29 @@ function sendDailyReminder() {
   }
 }
 
-// wywołanie po załadowaniu DOM
 document.addEventListener("DOMContentLoaded", requestNotificationPermission);
 
-////////////////////////////////////////////////////////////
-// FUNKCJA VIBRACJI
-////////////////////////////////////////////////////////////
 function vibrate(pattern) {
   if ("vibrate" in navigator) {
     navigator.vibrate(pattern);
   }
 }
 
-////////////////////////////////////////////////////////////
-// INTELIGENTNY WYBÓR SŁOWA
-////////////////////////////////////////////////////////////
-
 function calculatePriority(word) {
-  // im mniejsza waga tym większy priorytet
+  
   const weightScore = 10 - word.weight;
-
-  // rzadko używane mają większy priorytet
   const usedScore = 1 / (word.used + 1);
-
-  // im dawno widziane tym większy priorytet
   const timeSinceSeen = Date.now() - (word.lastSeen || 0);
-  const timeScore = Math.min(timeSinceSeen / 60000, 5); // max 5
+  const timeScore = Math.min(timeSinceSeen / 60000, 5);
 
   return weightScore * 2 + usedScore * 5 + timeScore;
 }
 
 function pickWord(words) {
-  // filtr — unikamy świeżo pokazanych słów
   let candidates = words.filter(
     w => Date.now() - (w.lastSeen || 0) > COOLDOWN_MS
   );
 
-  // jeśli wszystkie są w cooldownie — użyj wszystkich
   if (candidates.length === 0) candidates = words;
 
   const scores = candidates.map(w => calculatePriority(w));
@@ -135,9 +112,6 @@ function pickWord(words) {
   return candidates[0];
 }
 
-////////////////////////////////////////////////////////////
-// UI
-////////////////////////////////////////////////////////////
 function showNextWord() {
   currentWord = pickWord(words);
 
@@ -145,7 +119,6 @@ function showNextWord() {
   document.getElementById("answer").value = "";
   document.getElementById("feedback").textContent = "";
 
-  // reset UI
   const input = document.getElementById("answer");
   const btn = document.getElementById("knowBtn");
 
@@ -160,7 +133,6 @@ function handleKnow() {
   const input = document.getElementById("answer");
   const btn = document.getElementById("knowBtn");
 
-  // jeśli jeszcze nie odpowiadamy → pokaż input
   if (!isAnswering) {
     input.style.display = "block";
     input.focus();
@@ -171,7 +143,6 @@ function handleKnow() {
     return;
   }
 
-  // jeśli już odpowiadamy → sprawdź odpowiedź
   checkAnswer();
 }
 
@@ -188,8 +159,7 @@ function checkAnswer() {
     vibrate(100);
     currentWord.weight = Math.min(currentWord.weight + 1, 10);
   } else {
-    document.getElementById("feedback").textContent =
-      "Źle. Poprawna odpowiedź: " + currentWord.translation;
+    document.getElementById("feedback").textContent = `Źle. Poprawna odpowiedź:  ${currentWord.translation}`;
     vibrate([200, 100, 200]);
     currentWord.weight = 0;
   }
@@ -208,10 +178,6 @@ function dontKnow() {
   saveAndContinue();
 }
 
-////////////////////////////////////////////////////////////
-// aktualizacja statystyk słowa
-////////////////////////////////////////////////////////////
-
 function updateUsage(word) {
   word.used = (word.used || 0) + 1;
   word.lastSeen = Date.now();
@@ -222,9 +188,6 @@ function saveAndContinue() {
   setTimeout(showNextWord, 1500);
 }
 
-////////////////////////////////////////////////////////////
-// statystyki
-////////////////////////////////////////////////////////////
 function formatDate(timestamp) {
   if (!timestamp || timestamp === 0) return "nigdy";
 
@@ -242,7 +205,6 @@ function showStats() {
   const tableBody = document.querySelector("#stats-table tbody");
   tableBody.innerHTML = "";
 
-  // sortowanie po poziomie nauki malejąco (najlepiej opanowane na górze)
   const sortedWords = [...words].sort((a, b) => b.weight - a.weight);
 
   sortedWords.forEach(word => {
